@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Eleven Rings · 生词本</title>
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #F5F0E8;
+  --bg-card: #FAF6F0;
+  --primary: #6B8F5E;
+  --primary-light: #8BAA7A;
+  --primary-dark: #4A6B3F;
+  --text: #2C2E26;
+  --text-muted: #7A7D72;
+  --border: #D8D2C4;
+  --danger: #C25B4A;
+  --success: #5B8C5A;
+  --warn: #C4943A;
+  --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --max-width: 1000px;
+  --tab-h: 64px;
+}
+html { font-size: 16px; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding-bottom: calc(var(--tab-h) + 24px);
+}
+a { color: var(--primary); text-decoration: none; }
+input, textarea, select, button { font-family: inherit; font-size: inherit; }
+
+/* ========== LAYOUT ========== */
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 16px; }
+
+/* ========== HEADER ========== */
+.app-header {
+  background: var(--primary-dark);
+  color: #fff;
+  padding: 16px 0;
+  position: sticky; top: 0; z-index: 50;
+}
+.app-header .container {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.app-header h1 {
+  font-size: 1.15rem; font-weight: 600; letter-spacing: 0.5px;
+}
+.app-header .word-count {
+  font-size: 0.8rem; background: rgba(255,255,255,0.15);
+  padding: 4px 12px; border-radius: 20px;
+}
+
+/* ========== TABS (BOTTOM NAV) ========== */
+.tab-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: var(--tab-h);
+  background: #fff;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: stretch;
+  z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
+}
+.tab-btn {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  border: none; background: transparent;
+  color: var(--text-muted); font-size: 0.65rem;
+  cursor: pointer; transition: color 0.2s; padding: 4px 0;
+}
+.tab-btn .tab-icon { font-size: 1.3rem; line-height: 1; }
+.tab-btn.active { color: var(--primary); font-weight: 600; }
+.tab-btn:active { opacity: 0.7; }
+
+/* ========== MODULE SECTIONS ========== */
+.module {
+  display: none;
+  padding: 20px 0;
+}
+.module.active { display: block; }
+.module-title {
+  font-size: 1.2rem; font-weight: 600; margin-bottom: 16px;
+  color: var(--primary-dark);
+}
+.module-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+
+/* ========== CARDS ========== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.card-title { font-weight: 600; margin-bottom: 8px; }
+
+/* ========== FORM ELEMENTS ========== */
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+.form-control {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: #fff;
+  color: var(--text); transition: border-color 0.2s;
+}
+.form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(107,143,94,0.2); }
+textarea.form-control { resize: vertical; min-height: 100px; }
+select.form-control { appearance: auto; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 10px 20px; border: none;
+  border-radius: var(--radius-sm); font-weight: 500; font-size: 0.9rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+.btn-outline:hover { background: var(--primary); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+.btn-block { width: 100%; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ========== BADGES ========== */
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 0.72rem; font-weight: 500;
+}
+.badge-easy { background: #D4EDDA; color: #155724; }
+.badge-medium { background: #FFF3CD; color: #856404; }
+.badge-hard { background: #F8D7DA; color: #721C24; }
+.badge-unlearned { background: #E2E3E5; color: #383D41; }
+.badge-learned { background: #D1ECF1; color: #0C5460; }
+.badge-mastered { background: #D4EDDA; color: #155724; }
+.badge-weak { background: #F8D7DA; color: #721C24; }
+.badge-phrase { background: #E8DAEF; color: #6C3483; }
+
+/* ========== WORD LIST ========== */
+.list-toolbar {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+  align-items: center;
+}
+.list-toolbar .search-box { flex: 1; min-width: 160px; }
+.list-toolbar select { padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; font-size: 0.8rem; }
+
+.word-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px; border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.word-item:last-child { border-bottom: none; }
+.word-item:hover { background: rgba(107,143,94,0.04); }
+.word-main { flex: 1; min-width: 0; }
+.word-main .word-text {
+  font-size: 1rem; font-weight: 600; color: var(--primary-dark);
+  word-break: break-word;
+}
+.word-main .word-phonetic { font-size: 0.8rem; color: var(--text-muted); margin-top: 1px; }
+.word-main .word-def { font-size: 0.9rem; margin-top: 4px; color: var(--text); }
+.word-main .word-example {
+  font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;
+  font-style: italic; padding-left: 8px; border-left: 2px solid var(--border);
+}
+.word-meta { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
+.word-actions { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.word-actions .btn { padding: 4px 10px; font-size: 0.75rem; }
+
+.pagination {
+  display: flex; justify-content: center; align-items: center; gap: 8px;
+  padding: 16px 0; flex-wrap: wrap;
+}
+.pagination .page-btn {
+  padding: 6px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: #fff; cursor: pointer; font-size: 0.8rem;
+}
+.pagination .page-btn:hover { border-color: var(--primary); color: var(--primary); }
+.pagination .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.pagination .page-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* ========== FLASHCARD ========== */
+.flashcard-container {
+  display: flex; justify-content: center; align-items: center;
+  min-height: 260px; perspective: 1000px; margin: 20px 0;
+}
+.flashcard {
+  width: 100%; max-width: 480px; min-height: 240px;
+  position: relative; cursor: pointer; transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+.flashcard-face {
+  position: absolute; top: 0; left: 0; width: 100%; min-height: 240px;
+  backface-visibility: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 28px 20px; border-radius: var(--radius);
+  background: var(--bg-card); border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.flashcard-back {
+  transform: rotateY(180deg);
+  align-items: flex-start; justify-content: flex-start;
+  text-align: left;
+}
+.flashcard .fc-word { font-size: 1.6rem; font-weight: 700; color: var(--primary-dark); text-align: center; }
+.flashcard .fc-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; }
+.flashcard .fc-phonetic { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px; }
+.flashcard .fc-pos { font-size: 0.85rem; color: var(--primary); margin-bottom: 4px; }
+.flashcard .fc-def { font-size: 1rem; line-height: 1.5; margin-bottom: 8px; }
+.flashcard .fc-example { font-size: 0.82rem; color: var(--text-muted); font-style: italic; padding-left: 10px; border-left: 2px solid var(--primary-light); }
+.flashcard-controls {
+  display: flex; justify-content: center; gap: 12px; margin-top: 16px; flex-wrap: wrap;
+}
+.flashcard-controls .btn { min-width: 100px; }
+
+/* ========== QUIZ ========== */
+.quiz-question { margin-bottom: 20px; }
+.quiz-question .q-num { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+.quiz-question .q-text { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; }
+.quiz-options { display: flex; flex-direction: column; gap: 8px; }
+.quiz-option {
+  padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: #fff; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;
+}
+.quiz-option:hover { border-color: var(--primary-light); background: rgba(107,143,94,0.05); }
+.quiz-option.selected { border-color: var(--primary); background: rgba(107,143,94,0.12); }
+.quiz-option.correct { border-color: var(--success); background: rgba(91,140,90,0.12); }
+.quiz-option.wrong { border-color: var(--danger); background: rgba(194,91,74,0.12); }
+.quiz-option.disabled { pointer-events: none; }
+.quiz-input { margin: 12px 0; }
+.quiz-input input {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 1rem;
+}
+.quiz-input input:focus { outline: none; border-color: var(--primary); }
+.quiz-result {
+  text-align: center; padding: 24px;
+}
+.quiz-result .score-num { font-size: 2.5rem; font-weight: 700; color: var(--primary-dark); }
+.quiz-result .score-label { font-size: 0.9rem; color: var(--text-muted); }
+
+/* ========== SETTINGS ========== */
+.setting-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.setting-item:last-child { border-bottom: none; }
+.setting-item .setting-label { font-size: 0.9rem; }
+.setting-item .setting-desc { font-size: 0.75rem; color: var(--text-muted); }
+.setting-item select, .setting-item input[type="number"] {
+  padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: #fff; font-size: 0.85rem; width: 100px;
+}
+
+/* ========== EXPORT ========== */
+.export-area { margin: 12px 0; }
+.export-area textarea {
+  width: 100%; height: 200px; padding: 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: "Courier New", monospace;
+  font-size: 0.82rem; background: #faf8f4; resize: vertical;
+}
+
+/* ========== MODAL / TOAST ========== */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+  z-index: 200; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: var(--bg-card); border-radius: var(--radius); padding: 24px;
+  max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.modal-box h3 { margin-bottom: 12px; color: var(--primary-dark); }
+.modal-actions { margin-top: 16px; display: flex; gap: 8px; justify-content: flex-end; }
+
+.toast {
+  position: fixed; top: 20px; right: 20px; z-index: 300;
+  padding: 14px 20px; border-radius: var(--radius-sm); color: #fff;
+  font-size: 0.9rem; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  transform: translateX(120%); transition: transform 0.3s ease;
+  max-width: 360px;
+}
+.toast.show { transform: translateX(0); }
+.toast-success { background: var(--success); }
+.toast-error { background: var(--danger); }
+.toast-info { background: var(--primary); }
+
+/* ========== REVIEW PROGRESS ========== */
+.review-progress { margin-bottom: 12px; }
+.progress-bar {
+  height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px;
+}
+.progress-bar .fill {
+  height: 100%; background: var(--primary); border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.review-stats { display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; }
+
+/* ========== EMPTY STATE ========== */
+.empty-state {
+  text-align: center; padding: 40px 20px; color: var(--text-muted);
+}
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-state p { font-size: 0.9rem; }
+
+/* ========== RESPONSIVE ========== */
+@media (min-width: 768px) {
+  .word-actions { flex-direction: row; }
+  .list-toolbar { flex-wrap: nowrap; }
+  .flashcard { max-width: 560px; }
+  .module { padding: 28px 0; }
+}
+
+@media (max-width: 400px) {
+  .flashcard .fc-word { font-size: 1.3rem; }
+  .btn { padding: 8px 14px; font-size: 0.82rem; }
+}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="app-header">
+  <div class="container">
+    <h1>🏀 Eleven Rings · 生词本</h1>
+    <span class="word-count" id="headerWordCount">0 词</span>
+  </div>
+</header>
+
+<!-- ===== MODULE: 录入 ===== -->
+<div class="container">
+<section id="module-input" class="module active">
+  <h2 class="module-title">📝 生词录入</h2>
+  <p class="module-subtitle">仅收录《Eleven Rings》原著生词，非本书来源词汇一律拒绝。</p>
+  <div class="card">
+    <div class="form-group">
+      <label>单词/短语录入</label>
+      <input type="text" class="form-control" id="singleWordInput" placeholder="输入单个单词或短语，如：selflessness">
+    </div>
+    <div class="form-group">
+      <label>所属章节</label>
+      <select class="form-control" id="chapterSelect">
+        <option value="Chapter1 The Circle of Love">Chapter1 The Circle of Love</option>
+        <option value="Chapter2">Chapter2</option>
+        <option value="Chapter3">Chapter3</option>
+        <option value="Chapter4">Chapter4</option>
+        <option value="Chapter5">Chapter5</option>
+        <option value="Chapter6">Chapter6</option>
+        <option value="Chapter7">Chapter7</option>
+        <option value="Chapter8">Chapter8</option>
+        <option value="Chapter9">Chapter9</option>
+        <option value="Chapter10">Chapter10</option>
+        <option value="Chapter11">Chapter11</option>
+        <option value="Chapter12">Chapter12</option>
+        <option value="Chapter13">Chapter13</option>
+        <option value="Chapter14">Chapter14</option>
+        <option value="其他">其他</option>
+      </select>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="addSingleWord()">录入单词</button>
+      <button class="btn btn-outline" onclick="document.getElementById('batchArea').style.display=document.getElementById('batchArea').style.display==='none'?'block':'none'">批量录入</button>
+    </div>
+    <div id="batchArea" style="display:none; margin-top:12px;">
+      <div class="form-group">
+        <label>批量粘贴英文原文或生词列表（逐行/空格/逗号分隔）</label>
+        <textarea class="form-control" id="batchTextInput" placeholder="粘贴书中英文原文段落或批量生词表……"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="batchAddWords()">提取并批量入库</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MODULE: 词库 ===== -->
+<section id="module-list" class="module">
+  <h2 class="module-title">📖 全书生词总清单</h2>
+  <div class="list-toolbar">
+    <input type="text" class="form-control search-box" id="searchWord" placeholder="🔍 搜索生词..." oninput="renderList()">
+    <select id="filterChapter" onchange="renderList()">
+      <option value="all">全部章节</option>
+    </select>
+    <select id="filterStatus" onchange="renderList()">
+      <option value="all">全部状态</option>
+      <option value="unlearned">未学习</option>
+      <option value="learned">已背诵</option>
+      <option value="mastered">已掌握</option>
+      <option value="weak">错题薄弱</option>
+    </select>
+    <select id="sortBy" onchange="renderList()">
+      <option value="added">收录时间</option>
+      <option value="alpha">字母序(A-Z)</option>
+      <option value="alpha-desc">字母序(Z-A)</option>
+    </select>
+  </div>
+  <div id="listContent">
+    <div class="empty-state"><p>词库为空，请先录入生词。</p></div>
+  </div>
+  <div class="pagination" id="listPagination"></div>
+</section>
+
+<!-- ===== MODULE: 背诵 ===== -->
+<section id="module-review" class="module">
+  <h2 class="module-title">🧠 艾宾浩斯背诵</h2>
+  <div class="card">
+    <div class="form-group">
+      <label>复习范围</label>
+      <select class="form-control" id="reviewScope" onchange="resetReview()">
+        <option value="all">全书全部生词</option>
+        <option value="weak">仅薄弱错题词库</option>
+      </select>
+    </div>
+    <div class="review-progress" id="reviewProgress">
+      <div class="review-stats">
+        <span>今日待复习: <strong id="reviewCount">0</strong></span>
+        <span>总词数: <strong id="reviewTotal">0</strong></span>
+      </div>
+      <div class="progress-bar"><div class="fill" id="reviewProgressFill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div id="reviewContent">
+    <div class="empty-state">
+      <div class="empty-icon">📇</div>
+      <p>暂无待复习词汇，点击下方按钮开始。</p>
+    </div>
+  </div>
+  <div class="flashcard-controls" id="reviewControls" style="display:none;">
+    <button class="btn btn-success" onclick="markReview('remembered')">✓ 记住了</button>
+    <button class="btn btn-danger" onclick="markReview('forgotten')">✗ 没记住</button>
+    <button class="btn btn-outline" onclick="resetReview()">🔁 重新开始</button>
+  </div>
+</section>
+
+<!-- ===== MODULE: 自测 ===== -->
+<section id="module-quiz" class="module">
+  <h2 class="module-title">✍️ 自测刷题</h2>
+  <div class="card">
+    <div class="form-group">
+      <label>出题模式</label>
+      <select class="form-control" id="quizMode" onchange="resetQuiz()">
+        <option value="en2cn">英译汉 · 选择题</option>
+        <option value="cn2en">汉译英 · 拼写填空</option>
+        <option value="phrase">短语搭配 · 完形填空</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>出题范围</label>
+      <select class="form-control" id="quizScope" onchange="resetQuiz()">
+        <option value="all">全书全部生词</option>
+        <option value="weak">仅薄弱错题词库</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>题目数量</label>
+      <select class="form-control" id="quizCount" onchange="resetQuiz()">
+        <option value="5">5 题</option>
+        <option value="10" selected>10 题</option>
+        <option value="20">20 题</option>
+        <option value="0">全部词汇</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="startQuiz()">🚀 开始答题</button>
+  </div>
+  <div id="quizContent"></div>
+</section>
+
+<!-- ===== MODULE: 导出 ===== -->
+<section id="module-export" class="module">
+  <h2 class="module-title">📦 词库导出</h2>
+  <p class="module-subtitle">将全部《Eleven Rings》生词库导出为纯文本或CSV格式。</p>
+  <div class="card">
+    <div class="btn-group" style="margin-bottom:12px;">
+      <button class="btn btn-primary" onclick="exportTxt()">导出 TXT</button>
+      <button class="btn btn-outline" onclick="exportCsv()">导出 CSV</button>
+    </div>
+    <div class="export-area">
+      <textarea id="exportOutput" readonly placeholder="点击导出按钮预览内容..."></textarea>
+    </div>
+    <button class="btn btn-sm btn-outline" onclick="copyExport()">📋 复制到剪贴板</button>
+  </div>
+</section>
+
+<!-- ===== MODULE: 设置 ===== -->
+<section id="module-settings" class="module">
+  <h2 class="module-title">⚙️ 设置</h2>
+  <div class="card">
+    <div class="setting-item">
+      <div>
+        <div class="setting-label">每页展示单词数</div>
+        <div class="setting-desc">词库列表分页显示数量</div>
+      </div>
+      <input type="number" id="settingPageSize" min="5" max="100" value="20" onchange="saveSettings();renderList()">
+    </div>
+    <div class="setting-item">
+      <div>
+        <div class="setting-label">薄弱词复习频次</div>
+        <div class="setting-desc">标记"没记住"后自动复习间隔</div>
+      </div>
+      <select id="settingWeakFreq">
+        <option value="1,3,7">第1/3/7天（标准）</option>
+        <option value="1,2,4,7">第1/2/4/7天（加强）</option>
+        <option value="1,3,7,14">第1/3/7/14天（宽松）</option>
+      </select>
+    </div>
+    <div class="setting-item">
+      <div>
+        <div class="setting-label">批量录入自动过滤基础词汇</div>
+        <div class="setting-desc">跳过 a/an/the/do/be/have 等极简基础词</div>
+      </div>
+      <select id="settingFilterBasic" onchange="saveSettings()">
+        <option value="yes">开启过滤</option>
+        <option value="no">关闭过滤</option>
+      </select>
+    </div>
+    <div class="setting-item">
+      <div>
+        <div class="setting-label">词库管理</div>
+        <div class="setting-desc">清空全部词库（不可恢复）</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="clearAllWords()">🗑️ 清空词库</button>
+    </div>
+    <div class="setting-item">
+      <div>
+        <div class="setting-label">数据统计</div>
+        <div class="setting-desc">查看词库概况</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="showStats()">📊 查看统计</button>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ===== TAB BAR ===== -->
+<nav class="tab-bar" id="tabBar">
+  <button class="tab-btn active" data-tab="module-input" onclick="switchTab('module-input')">
+    <span class="tab-icon">📝</span>录入
+  </button>
+  <button class="tab-btn" data-tab="module-list" onclick="switchTab('module-list')">
+    <span class="tab-icon">📖</span>词库
+  </button>
+  <button class="tab-btn" data-tab="module-review" onclick="switchTab('module-review')">
+    <span class="tab-icon">🧠</span>背诵
+  </button>
+  <button class="tab-btn" data-tab="module-quiz" onclick="switchTab('module-quiz')">
+    <span class="tab-icon">✍️</span>自测
+  </button>
+  <button class="tab-btn" data-tab="module-export" onclick="switchTab('module-export')">
+    <span class="tab-icon">📦</span>导出
+  </button>
+  <button class="tab-btn" data-tab="module-settings" onclick="switchTab('module-settings')">
+    <span class="tab-icon">⚙️</span>设置
+  </button>
+</nav>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3 id="modalTitle">提示</h3>
+    <div id="modalBody"></div>
+    <div class="modal-actions" id="modalActions">
+      <button class="btn btn-primary" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==================================================================
+   DATA: 101 Chapter1 words
+   ================================================================== */
+const INITIAL_WORDS = [
+  // 一、团队理念&心理特质类
+  {word:"selflessness",phonetic:{uk:"/ˈselfləsnəs/",us:"/ˈselfləsnəs/"},def:"无私、忘我",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Selflessness is the foundation of any great team — players must put the group ahead of personal glory."},
+  {word:"egoistic",phonetic:{uk:"/ˌiːɡəˈɪstɪk/",us:"/ˌiːɡoʊˈɪstɪk/"},def:"利己主义的、自我中心的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"An egoistic player can destroy team chemistry faster than any opponent."},
+  {word:"bonding",phonetic:{uk:"/ˈbɒndɪŋ/",us:"/ˈbɑːndɪŋ/"},def:"团队情感羁绊、联结",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The shared struggle of training camp creates lasting bonding among teammates."},
+  {word:"resilience",phonetic:{uk:"/rɪˈzɪliəns/",us:"/rɪˈzɪliəns/"},def:"抗挫韧性、抗压能力",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"A champion's resilience is tested not in victory, but in how they respond to defeat."},
+  {word:"ironclad",phonetic:{uk:"/ˈaɪənklæd/",us:"/ˈaɪərnklæd/"},def:"坚不可摧的（自信心）",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Phil Jackson's ironclad confidence in the triangle offense never wavered."},
+  {word:"self-doubt",phonetic:{uk:"/ˌself ˈdaʊt/",us:"/ˌself ˈdaʊt/"},def:"自我怀疑",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Even elite athletes battle self-doubt; the key is not letting it paralyze you."},
+  {word:"ruthless",phonetic:{uk:"/ˈruːθləs/",us:"/ˈruːθləs/"},def:"决绝的、一往无前的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Michael Jordan's ruthless drive to win pushed every teammate to raise their game."},
+  {word:"determination",phonetic:{uk:"/dɪˌtɜːmɪˈneɪʃn/",us:"/dɪˌtɜːrmɪˈneɪʃn/"},def:"决心、毅力",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Sheer determination carried the Bulls through the toughest moments of the playoffs."},
+  {word:"brash",phonetic:{uk:"/bræʃ/",us:"/bræʃ/"},def:"年少轻狂的、莽撞冲动的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Young players often come into the league brash and untamed, needing guidance to channel that fire."},
+  {word:"consume",phonetic:{uk:"/kənˈsjuːm/",us:"/kənˈsuːm/"},def:"被执念彻底占据、沉迷",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The desire to win can consume a player — obsession becomes both fuel and burden."},
+  {word:"cohesive",phonetic:{uk:"/kəʊˈhiːsɪv/",us:"/koʊˈhiːsɪv/"},def:"团结一心的、有凝聚力的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"A cohesive unit fights for one another; a fractured one fights among themselves."},
+  {word:"emotional intelligence",phonetic:{uk:"/ɪˈməʊʃənl ɪnˈtelɪdʒəns/",us:"/ɪˈmoʊʃənl ɪnˈtelɪdʒəns/"},def:"情商",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Phil Jackson's emotional intelligence allowed him to read each player's inner state and respond accordingly."},
+  {word:"mental discipline",phonetic:{uk:"/ˈmentl ˈdɪsəplɪn/",us:"/ˈmentl ˈdɪsəplɪn/"},def:"心智自制力、情绪定力",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Meditation was Jackson's tool for building mental discipline within the team."},
+  {word:"dependability",phonetic:{uk:"/dɪˌpendəˈbɪləti/",us:"/dɪˌpendəˈbɪləti/"},def:"可靠度、靠谱特质",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Dependability matters more than talent when the game is on the line."},
+  {word:"apathetic",phonetic:{uk:"/ˌæpəˈθetɪk/",us:"/ˌæpəˈθetɪk/"},def:"麻木冷漠的、毫无干劲的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"An apathetic locker room has no pulse — passion must be reignited from within."},
+  {word:"antagonistic",phonetic:{uk:"/ænˌtæɡəˈnɪstɪk/",us:"/ænˌtæɡəˈnɪstɪk/"},def:"抵触的、敌对的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"When players become antagonistic toward the coach, the team loses its direction."},
+  {word:"mindset",phonetic:{uk:"/ˈmaɪndset/",us:"/ˈmaɪndset/"},def:"思维定式、心态",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Winning starts with the right mindset long before the first tip-off."},
+  {word:"conviction",phonetic:{uk:"/kənˈvɪkʃn/",us:"/kənˈvɪkʃn/"},def:"坚定信念",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"He spoke with such conviction that the whole team bought into his vision."},
+  {word:"innocent",phonetic:{uk:"/ˈɪnəsnt/",us:"/ˈɪnəsnt/"},def:"纯粹的、天真的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"There was an innocent joy in how the rookies approached the game — pure, untainted."},
+  {word:"folly",phonetic:{uk:"/ˈfɒli/",us:"/ˈfɑːli/"},def:"愚蠢的行为、荒唐想法",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"It was folly to think individual talent alone could win a championship."},
+  {word:"inclined",phonetic:{uk:"/ɪnˈklaɪnd/",us:"/ɪnˈklaɪnd/"},def:"天性倾向于……",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Some players are naturally inclined to lead; others need to be drawn out of their shells."},
+  {word:"immature",phonetic:{uk:"/ˌɪməˈtjʊə(r)/",us:"/ˌɪməˈtʊr/"},def:"心智不成熟的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"An immature response to criticism can fracture team trust in an instant."},
+  {word:"brotherhood",phonetic:{uk:"/ˈbrʌðəhʊd/",us:"/ˈbrʌðərhʊd/"},def:"兄弟情谊、同袍羁绊",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The brotherhood forged in the locker room outlasts any single season."},
+
+  // 二、动作/行为动词类
+  {word:"televised",phonetic:{uk:"/ˈtelɪvaɪzd/",us:"/ˈtelɪvaɪzd/"},def:"电视转播的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The televised game reached millions of viewers around the world."},
+  {word:"plague",phonetic:{uk:"/pleɪɡ/",us:"/pleɪɡ/"},def:"反复困扰、纠缠",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Injuries plagued the team throughout the regular season."},
+  {word:"emerge",phonetic:{uk:"/ɪˈmɜːdʒ/",us:"/ɪˈmɜːrdʒ/"},def:"蜕变、显现",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"A leader emerged from the chaos — someone who refused to let the team quit."},
+  {word:"scoff",phonetic:{uk:"/skɒf/",us:"/skɑːf/"},def:"嗤之以鼻、嘲笑",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Critics scoffed at the triangle offense, calling it too complicated for modern basketball."},
+  {word:"forge",phonetic:{uk:"/fɔːdʒ/",us:"/fɔːrdʒ/"},def:"打造、凝聚（团队）",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Jackson worked tirelessly to forge a unified identity out of disparate talents."},
+  {word:"formulate",phonetic:{uk:"/ˈfɔːmjuleɪt/",us:"/ˈfɔːrmjuleɪt/"},def:"归纳、制定（理论）",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"He formulated his coaching philosophy from a blend of Native American spirituality and modern psychology."},
+  {word:"perceive",phonetic:{uk:"/pəˈsiːv/",us:"/pərˈsiːv/"},def:"看待、视作",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"How a player perceives criticism determines whether they grow or resent."},
+  {word:"outwork",phonetic:{uk:"/ˌaʊtˈwɜːk/",us:"/ˌaʊtˈwɜːrk/"},def:"比对手更刻苦训练",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"The championship teams always outwork their opponents in the off-season."},
+  {word:"outthink",phonetic:{uk:"/ˌaʊtˈθɪŋk/",us:"/ˌaʊtˈθɪŋk/"},def:"在谋略上胜过对手",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Jackson's ability to outthink opposing coaches gave the Bulls a strategic edge."},
+  {word:"ordain",phonetic:{uk:"/ɔːˈdeɪn/",us:"/ɔːrˈdeɪn/"},def:"注定、天命安排",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Success is not ordained by fate — it is earned through relentless preparation."},
+  {word:"cruise",phonetic:{uk:"/kruːz/",us:"/kruːz/"},def:"轻松躺赢、顺风顺水打球",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The team cruised through the regular season but stumbled when the playoffs demanded true grit."},
+  {word:"fascinate",phonetic:{uk:"/ˈfæsɪneɪt/",us:"/ˈfæsɪneɪt/"},def:"深深吸引、使人着迷",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The psychology of team dynamics fascinated Jackson more than X's and O's."},
+  {word:"unravel",phonetic:{uk:"/ʌnˈrævl/",us:"/ʌnˈrævl/"},def:"剖析、解开（奥秘）",pos:"v.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The book unravels the mystery of what makes championship teams tick."},
+
+  // 三、场景&程度副词/形容词类
+  {word:"modestly",phonetic:{uk:"/ˈmɒdɪstli/",us:"/ˈmɑːdɪstli/"},def:"（薪资）微薄地",pos:"adv.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"He was paid modestly compared to the superstars, yet his contribution was immeasurable."},
+  {word:"incredibly",phonetic:{uk:"/ɪnˈkredəbli/",us:"/ɪnˈkredəbli/"},def:"极其、难以置信地",pos:"adv.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The level of focus required at the finals is incredibly demanding."},
+  {word:"horrifying",phonetic:{uk:"/ˈhɒrɪfaɪɪŋ/",us:"/ˈhɔːrɪfaɪɪŋ/"},def:"骇人的、恐怖的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The thought of losing Game 7 was horrifying to the entire organization."},
+  {word:"sophisticated",phonetic:{uk:"/səˈfɪstɪkeɪtɪd/",us:"/səˈfɪstɪkeɪtɪd/"},def:"成熟完备的（媒体体系）",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Today's media machine is far more sophisticated than in the days of the early NBA."},
+  {word:"marketing-driven",phonetic:{uk:"/ˈmɑːkɪtɪŋ ˈdrɪvn/",us:"/ˈmɑːrkɪtɪŋ ˈdrɪvn/"},def:"营销主导的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Much of modern sports coverage is marketing-driven, focused on stars rather than the team."},
+  {word:"inherent",phonetic:{uk:"/ɪnˈhɪərənt/",us:"/ɪnˈhɪrənt/"},def:"与生俱来的、内在的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"There is an inherent tension between individual glory and team success."},
+  {word:"disconnected",phonetic:{uk:"/ˌdɪskəˈnektɪd/",us:"/ˌdɪskəˈnektɪd/"},def:"人心涣散的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"A disconnected team cannot sustain a serious playoff run."},
+  {word:"unified",phonetic:{uk:"/ˈjuːnɪfaɪd/",us:"/ˈjuːnɪfaɪd/"},def:"团结一致的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Only a unified group can withstand the pressure of a Game 7 on the road."},
+  {word:"transcendent",phonetic:{uk:"/trænˈsendənt/",us:"/trænˈsendənt/"},def:"超凡顶尖的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Michael Jordan's transcendent talent elevated everyone around him."},
+  {word:"clutch",phonetic:{uk:"/klʌtʃ/",us:"/klʌtʃ/"},def:"大心脏的、关键时刻靠谱的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"A clutch performer thrives when the pressure is highest and the margin is smallest."},
+  {word:"miraculous",phonetic:{uk:"/mɪˈrækjələs/",us:"/mɪˈrækjələs/"},def:"奇迹般的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The comeback seemed miraculous — down 15 with four minutes left."},
+  {word:"humiliated",phonetic:{uk:"/hjuːˈmɪlieɪtɪd/",us:"/hjuːˈmɪlieɪtɪd/"},def:"惨败受辱的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"After the humiliated loss, the locker room was silent for an hour."},
+  {word:"decisive",phonetic:{uk:"/dɪˈsaɪsɪv/",us:"/dɪˈsaɪsɪv/"},def:"决胜的、决定性的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"His decisive move in the final seconds sealed the championship."},
+  {word:"inventive",phonetic:{uk:"/ɪnˈventɪv/",us:"/ɪnˈventɪv/"},def:"打法灵活有创造力的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The triangle offense was an inventive system that maximized team movement."},
+  {word:"fearless",phonetic:{uk:"/ˈfɪələs/",us:"/ˈfɪrləs/"},def:"无所畏惧的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"A fearless approach to the game frees players from the fear of failure."},
+  {word:"rock-solid",phonetic:{uk:"/rɒk ˈsɒlɪd/",us:"/rɑːk ˈsɑːlɪd/"},def:"坚如磐石的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The team's defense was rock-solid, allowing fewer than 90 points per game."},
+  {word:"ironically",phonetic:{uk:"/aɪˈrɒnɪkli/",us:"/aɪˈrɑːnɪkli/"},def:"颇具讽刺意味地",pos:"adv.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Ironically, the less he forced his will, the more the team responded to his leadership."},
+  {word:"groundbreaking",phonetic:{uk:"/ˈɡraʊndbreɪkɪŋ/",us:"/ˈɡraʊndbreɪkɪŋ/"},def:"开创性的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Jackson's use of mindfulness in professional sports was groundbreaking at the time."},
+  {word:"extensive",phonetic:{uk:"/ɪkˈstensɪv/",us:"/ɪkˈstensɪv/"},def:"海量的、大范围的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"His extensive knowledge of psychology set him apart from traditional coaches."},
+  {word:"midsize",phonetic:{uk:"/ˈmɪdsaɪz/",us:"/ˈmɪdsaɪz/"},def:"中型规模的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Chicago is a midsize market that became the epicenter of the basketball world."},
+  {word:"universal",phonetic:{uk:"/ˌjuːnɪˈvɜːsl/",us:"/ˌjuːnɪˈvɜːrsl/"},def:"通用的、放之四海皆准的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The principles of teamwork are universal — they apply on the court and in the boardroom."},
+  {word:"appropriate",phonetic:{uk:"/əˈprəʊpriət/",us:"/əˈproʊpriət/"},def:"适配的、合适的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Finding the appropriate role for each player is the coach's primary task."},
+  {word:"particular",phonetic:{uk:"/pəˈtɪkjələ(r)/",us:"/pərˈtɪkjələr/"},def:"特定的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Each player has particular strengths that must be woven into the team fabric."},
+  {word:"frustrated",phonetic:{uk:"/frʌˈstreɪtɪd/",us:"/frʌˈstreɪtɪd/"},def:"受挫的、心气不顺的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"A frustrated star can poison the entire locker room atmosphere."},
+  {word:"eager",phonetic:{uk:"/ˈiːɡə(r)/",us:"/ˈiːɡər/"},def:"迫切渴望的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The rookies were eager to prove themselves in their first playoff series."},
+  {word:"roaring",phonetic:{uk:"/ˈrɔːrɪŋ/",us:"/ˈrɔːrɪŋ/"},def:"势不可挡的（开局）",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The Bulls got off to a roaring start, winning their first ten games."},
+  {word:"spirited",phonetic:{uk:"/ˈspɪrɪtɪd/",us:"/ˈspɪrɪtɪd/"},def:"斗志昂扬的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"A spirited practice session set the tone for the entire season."},
+  {word:"unison",phonetic:{uk:"/ˈjuːnɪsn/",us:"/ˈjuːnɪsn/"},def:"同步、步调一致",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"The five players moved in unison, reading each other's intentions without a word."},
+  {word:"handily",phonetic:{uk:"/ˈhændɪli/",us:"/ˈhændɪli/"},def:"轻松地（赢球）",pos:"adv.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"They won the first two rounds handily, but the real test was yet to come."},
+  {word:"troubling",phonetic:{uk:"/ˈtrʌblɪŋ/",us:"/ˈtrʌblɪŋ/"},def:"棘手的、令人担忧的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"A troubling pattern emerged: the team played well at home but crumbled on the road."},
+  {word:"treacherous",phonetic:{uk:"/ˈtretʃərəs/",us:"/ˈtretʃərəs/"},def:"暗藏凶险的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"The path to a championship is treacherous — one wrong step and it's over."},
+  {word:"fierce",phonetic:{uk:"/fɪəs/",us:"/fɪrs/"},def:"深厚牢固的（羁绊）",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The fierce loyalty among the core players became the team's greatest weapon."},
+  {word:"thorough",phonetic:{uk:"/ˈθʌrə/",us:"/ˈθɜːroʊ/"},def:"透彻全面的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Jackson's thorough preparation left nothing to chance before each game."},
+  {word:"time-honored",phonetic:{uk:"/taɪm ˈɒnəd/",us:"/taɪm ˈɑːnərd/"},def:"久经考验的、历史悠久的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"The time-honored tradition of the team huddle remains a symbol of unity."},
+  {word:"spiritual",phonetic:{uk:"/ˈspɪrɪtʃuəl/",us:"/ˈspɪrɪtʃuəl/"},def:"精神层面的、灵性的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Jackson introduced spiritual practices like meditation to a league focused purely on physicality."},
+  {word:"ambitious",phonetic:{uk:"/æmˈbɪʃəs/",us:"/æmˈbɪʃəs/"},def:"进取心强的、有野心的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"An ambitious young roster needs direction as much as it needs talent."},
+  {word:"integrated",phonetic:{uk:"/ˈɪntɪɡreɪtɪd/",us:"/ˈɪntɪɡreɪtɪd/"},def:"整合凝聚为一体的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"An integrated system connects every player's role to the larger goal."},
+  {word:"mechanistic",phonetic:{uk:"/ˌmekəˈnɪstɪk/",us:"/ˌmekəˈnɪstɪk/"},def:"机械化刻板的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"A mechanistic approach to coaching ignores the human element that drives performance."},
+  {word:"mysterious",phonetic:{uk:"/mɪˈstɪəriəs/",us:"/mɪˈstɪriəs/"},def:"玄妙难解的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The mysterious chemistry of championship teams cannot be reduced to statistics."},
+
+  // 四、名词（事物/概念/专业术语）
+  {word:"rivalry",phonetic:{uk:"/ˈraɪvlri/",us:"/ˈraɪvlri/"},def:"宿敌对决、激烈竞争",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The Bulls-Pistons rivalry defined the Eastern Conference in the late 80s."},
+  {word:"emergence",phonetic:{uk:"/ɪˈmɜːdʒəns/",us:"/ɪˈmɜːrdʒəns/"},def:"崛起、出现",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The emergence of a young core signaled a new era for the franchise."},
+  {word:"phenomenon",phonetic:{uk:"/fəˈnɒmɪnən/",us:"/fəˈnɑːmɪnən/"},def:"现象、全球红人",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Michael Jordan became a global phenomenon, transcending the sport itself."},
+  {word:"multibillion-dollar",phonetic:{uk:"/ˌmʌltiˈbɪljən dɒlə/",us:"/ˌmʌltiˈbɪljən dɑːlər/"},def:"数十亿美元规模的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The NBA grew into a multibillion-dollar enterprise during the Jordan era."},
+  {word:"by-product",phonetic:{uk:"/ˈbaɪ prɒdʌkt/",us:"/ˈbaɪ prɑːdʌkt/"},def:"副产品、附带弊端",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Celebrity status is a by-product of success, but it can also become a distraction."},
+  {word:"obsession",phonetic:{uk:"/əbˈseʃn/",us:"/əbˈseʃn/"},def:"痴迷、执念追捧",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The media's obsession with individual stats often undermines the team narrative."},
+  {word:"superstardom",phonetic:{uk:"/ˈsuːpəstɑːdəm/",us:"/ˈsuːpərstɑːrdəm/"},def:"超级巨星地位",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"The journey to superstardom is paved with countless hours of unseen work."},
+  {word:"handful",phonetic:{uk:"/ˈhændfʊl/",us:"/ˈhændfʊl/"},def:"一小撮、少数人",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Only a handful of players truly understand the sacrifice required to win."},
+  {word:"championship",phonetic:{uk:"/ˈtʃæmpiənʃɪp/",us:"/ˈtʃæmpiənʃɪp/"},def:"总冠军、锦标赛",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The championship is not the destination — it is the by-product of a process."},
+  {word:"collective",phonetic:{uk:"/kəˈlektɪv/",us:"/kəˈlektɪv/"},def:"集体的",pos:"adj./n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The collective effort of the entire roster outweighs any individual performance."},
+  {word:"DNA",phonetic:{uk:"/ˌdiː en ˈeɪ/",us:"/ˌdiː en ˈeɪ/"},def:"骨子里的特质、团队基因",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Winning is built into the DNA of championship organizations."},
+  {word:"training camp",phonetic:{uk:"/ˈtreɪnɪŋ kæmp/",us:"/ˈtreɪnɪŋ kæmp/"},def:"赛季前训练营",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Training camp is where the foundation of a team's identity is laid."},
+  {word:"finals",phonetic:{uk:"/ˈfaɪnlz/",us:"/ˈfaɪnlz/"},def:"（体育）总决赛",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Making it to the finals is hard; winning there is even harder."},
+  {word:"gigs",phonetic:{uk:"/ɡɪɡz/",us:"/ɡɪɡz/"},def:"球员短期打球合约、生涯服役经历",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Most players bounce between several gigs before finding a team that fits."},
+  {word:"point guard",phonetic:{uk:"/pɔɪnt ɡɑːd/",us:"/pɔɪnt ɡɑːrd/"},def:"控球后卫（篮球位置）",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"A great point guard is the coach's extension on the floor."},
+  {word:"offense",phonetic:{uk:"/əˈfens/",us:"/əˈfens/"},def:"进攻体系、进攻打法",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The triangle offense revolutionized how teams think about floor spacing."},
+  {word:"marathon",phonetic:{uk:"/ˈmærəθɒn/",us:"/ˈmærəθɑːn/"},def:"漫长持久战",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"An NBA season is a marathon, not a sprint — endurance matters as much as talent."},
+  {word:"sprint",phonetic:{uk:"/sprɪnt/",us:"/sprɪnt/"},def:"短期冲刺",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The playoffs are a sprint within the marathon, demanding everything a team has."},
+  {word:"consultant",phonetic:{uk:"/kənˈsʌltənt/",us:"/kənˈsʌltənt/"},def:"管理顾问",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Jackson hired a consultant to help players navigate the psychological demands of the season."},
+  {word:"characteristic",phonetic:{uk:"/ˌkærəktəˈrɪstɪk/",us:"/ˌkærəktəˈrɪstɪk/"},def:"特征、特点",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The defining characteristic of great teams is their ability to adapt under pressure."},
+  {word:"gang",phonetic:{uk:"/ɡæŋ/",us:"/ɡæŋ/"},def:"帮派、团伙",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The team became a gang in the best sense — a tight-knit group that protected its own."},
+  {word:"despair",phonetic:{uk:"/dɪˈspeə(r)/",us:"/dɪˈsper/"},def:"绝望",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"After three consecutive losses, despair began creeping into the locker room."},
+  {word:"hostility",phonetic:{uk:"/hɒˈstɪləti/",us:"/hɑːˈstɪləti/"},def:"敌意、对立情绪",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Open hostility between key players can tear a team apart from the inside."},
+  {word:"motto",phonetic:{uk:"/ˈmɒtəʊ/",us:"/ˈmɑːtoʊ/"},def:"座右铭、行事口号",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The team's motto was simple: 'Together we rise, divided we fall.'"},
+  {word:"competitor",phonetic:{uk:"/kəmˈpetɪtə(r)/",us:"/kəmˈpetɪtər/"},def:"竞争对手",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Every great competitor has an inner fire that refuses to accept defeat."},
+  {word:"lone warrior",phonetic:{uk:"/ləʊn ˈwɒriə(r)/",us:"/loʊn ˈwɔːriər/"},def:"孤胆英雄、单打独斗的球员",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Jordan started as a lone warrior but learned that championships require trust."},
+  {word:"tribal",phonetic:{uk:"/ˈtraɪbl/",us:"/ˈtraɪbl/"},def:"部落式的、集体抱团的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"The tribal instinct to defend one's group is powerful — great coaches harness it."},
+  {word:"overriding",phonetic:{uk:"/ˌəʊvəˈraɪdɪŋ/",us:"/ˌoʊvərˈraɪdɪŋ/"},def:"首要的、压倒一切的",pos:"adj.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"The overriding goal must be the team's success, not individual accolades."},
+  {word:"adversary",phonetic:{uk:"/ˈædvəsəri/",us:"/ˈædvərsəri/"},def:"强敌、正式对手",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"A worthy adversary pushes you to heights you didn't know you could reach."},
+  {word:"foe",phonetic:{uk:"/fəʊ/",us:"/foʊ/"},def:"劲敌、敌人（书面用词）",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The greatest foe is often not the opponent on the court, but the doubt within."},
+  {word:"wonder",phonetic:{uk:"/ˈwʌndə(r)/",us:"/ˈwʌndər/"},def:"由衷赞叹、新鲜感",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The childlike wonder of the game is something great coaches help players protect."},
+  {word:"lever",phonetic:{uk:"/ˈliːvə(r)/",us:"/ˈlevər/"},def:"撬动因素、抓手",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Jackson used meditation as a lever to unlock a level of focus the team never had."},
+  {word:"critical mass",phonetic:{uk:"/ˈkrɪtɪkl mæs/",us:"/ˈkrɪtɪkl mæs/"},def:"核心主力骨干群体",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"A critical mass of veteran leaders stabilized the locker room during the rough patches."},
+  {word:"shooting spree",phonetic:{uk:"/ˈʃuːtɪŋ spriː/",us:"/ˈʃuːtɪŋ spriː/"},def:"连续疯狂得分、得分爆发",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Jordan went on a shooting spree in the third quarter that buried the opponent."},
+  {word:"illusion",phonetic:{uk:"/ɪˈluːʒn/",us:"/ɪˈluːʒn/"},def:"错觉、空想",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The illusion of control is the coach's greatest trap — you can't force chemistry."},
+  {word:"brink",phonetic:{uk:"/brɪŋk/",us:"/brɪŋk/"},def:"淘汰边缘、紧要关头",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The team stood on the brink of elimination and found something they didn't know they had."},
+  {word:"contest",phonetic:{uk:"/ˈkɒntest/",us:"/ˈkɑːntest/"},def:"激烈赛事比拼",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"Every playoff contest is a war of attrition as much as skill."},
+  {word:"parquet",phonetic:{uk:"/ˈpɑːkeɪ/",us:"/pɑːrˈkeɪ/"},def:"球场实木地板",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"The Boston Garden's parquet floor held decades of basketball history."},
+  {word:"trap",phonetic:{uk:"/træp/",us:"/træp/"},def:"思维误区、陷阱",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The biggest trap for a young team is believing they've already arrived."},
+  {word:"chatter",phonetic:{uk:"/ˈtʃætə(r)/",us:"/ˈtʃætər/"},def:"空谈、无意义讨论",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Jackson tuned out the media chatter and focused on what mattered inside the locker room."},
+  {word:"stratagems",phonetic:{uk:"/ˈstrætədʒəmz/",us:"/ˈstrætədʒəmz/"},def:"战术谋略、计策",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"The coach's stratagems went beyond X's and O's — he played the psychological game."},
+  {word:"airwaves",phonetic:{uk:"/ˈeəweɪvz/",us:"/ˈerweɪvz/"},def:"大众媒体传播渠道",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Jackson's unconventional methods dominated the sports airwaves for weeks."},
+  {word:"curiosity",phonetic:{uk:"/ˌkjʊəriˈɒsəti/",us:"/ˌkjʊriˈɑːsəti/"},def:"好奇心",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"A coach's curiosity about what makes each player tick is essential to building trust."},
+  {word:"mystery",phonetic:{uk:"/ˈmɪstri/",us:"/ˈmɪstri/"},def:"奥秘、谜题",pos:"n.",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The mystery of team chemistry is what drew Jackson to study it so deeply."},
+
+  // 五、固定高频短语
+  {word:"make ends meet",phonetic:{uk:"/meɪk endz miːt/",us:"/meɪk endz miːt/"},def:"收支平衡、养家糊口",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Many early NBA players had to take off-season jobs just to make ends meet."},
+  {word:"highlight reel",phonetic:{uk:"/ˈhaɪlaɪt riːl/",us:"/ˈhaɪlaɪt riːl/"},def:"赛事高光集锦",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"SportsCenter's highlight reel showed only the dunks, not the unglamorous work that made them possible."},
+  {word:"play havoc with",phonetic:{uk:"/pleɪ ˈhævək wɪð/",us:"/pleɪ ˈhævək wɪð/"},def:"大肆破坏、打乱",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Injuries played havoc with the team's carefully constructed rotation."},
+  {word:"along the same lines",phonetic:{uk:"/əˈlɒŋ ðə seɪm laɪnz/",us:"/əˈlɔːŋ ðə seɪm laɪnz/"},def:"遵循相同规律、沿同一路径",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The second unit operated along the same lines as the starters, maintaining continuity."},
+  {word:"kick off",phonetic:{uk:"/kɪk ɒf/",us:"/kɪk ɔːf/"},def:"开启、拉开序幕",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"easy",sentence:"The season kicked off with a statement win on opening night."},
+  {word:"buy into",phonetic:{uk:"/baɪ ˈɪntuː/",us:"/baɪ ˈɪntuː/"},def:"认同、接纳（理念/打法）",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"Getting star players to buy into the team system is the hardest part of coaching."},
+  {word:"hold up",phonetic:{uk:"/həʊld ʌp/",us:"/hoʊld ʌp/"},def:"（理论）站得住脚、成立",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"medium",sentence:"The triangle offense held up against every defensive scheme thrown at it."},
+  {word:"X's and O's",phonetic:{uk:"/ˈeksɪz ənd ˈəʊz/",us:"/ˈeksɪz ənd ˈoʊz/"},def:"篮球俚语：纸面战术跑位排布",pos:"【固定搭配】",chapter:"Chapter1 The Circle of Love",difficulty:"hard",sentence:"Jackson knew X's and O's, but he understood that coaching people mattered more."}
+];
+</script>
+<script>
+/* ==================================================================
+   CORE APP
+   ================================================================== */
+let words = [];
+let settings = {};
+
+// ----- Initialization -----
+function init() {
+  loadSettings();
+  loadWords();
+
+  if (words.length === 0) {
+    importInitialWords();
+  }
+
+  updateHeaderCount();
+  populateChapterFilter();
+  renderList();
+  resetReview();
+  updateAll();
+}
+
+// ----- Settings -----
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem('er11_settings');
+    if (raw) {
+      settings = JSON.parse(raw);
+    } else {
+      settings = { pageSize: 20, weakFreq: '1,3,7', filterBasic: 'yes' };
+    }
+  } catch(e) { settings = { pageSize: 20, weakFreq: '1,3,7', filterBasic: 'yes' }; }
+  // sync UI
+  const ps = document.getElementById('settingPageSize');
+  if (ps) ps.value = settings.pageSize;
+  const wf = document.getElementById('settingWeakFreq');
+  if (wf) wf.value = settings.weakFreq;
+  const fb = document.getElementById('settingFilterBasic');
+  if (fb) fb.value = settings.filterBasic;
+}
+
+function saveSettings() {
+  settings.pageSize = parseInt(document.getElementById('settingPageSize').value) || 20;
+  settings.weakFreq = document.getElementById('settingWeakFreq').value;
+  settings.filterBasic = document.getElementById('settingFilterBasic').value;
+  localStorage.setItem('er11_settings', JSON.stringify(settings));
+  showToast('设置已保存', 'success');
+}
+
+// ----- Words CRUD -----
+function loadWords() {
+  try {
+    const raw = localStorage.getItem('er11_words');
+    if (raw) words = JSON.parse(raw);
+    else words = [];
+  } catch(e) { words = []; }
+}
+
+function saveWords() {
+  localStorage.setItem('er11_words', JSON.stringify(words));
+  updateHeaderCount();
+  populateChapterFilter();
+  renderList();
+  updateAll();
+}
+
+function importInitialWords() {
+  let added = 0, skipped = 0;
+  INITIAL_WORDS.forEach(w => {
+    const id = w.word.toLowerCase().replace(/[^a-z0-9]/g,'');
+    if (!words.find(x => x._id === id)) {
+      words.push({...w, _id: id, addedAt: Date.now(), status: 'unlearned'});
+      added++;
+    } else {
+      skipped++;
+    }
+  });
+  saveWords();
+  showModal('词库初始化完成', `<p>成功导入 <strong>${added}</strong> 个《Eleven Rings》Chapter1 生词。${skipped > 0 ? `<br>跳过 ${skipped} 个重复词。` : ''}</p>`);
+}
+
+// ----- Header -----
+function updateHeaderCount() {
+  document.getElementById('headerWordCount').textContent = words.length + ' 词';
+}
+
+// ----- Chapter filter population -----
+function populateChapterFilter() {
+  const sel = document.getElementById('filterChapter');
+  const current = sel.value;
+  const chs = [...new Set(words.map(w => w.chapter))].sort();
+  sel.innerHTML = '<option value="all">全部章节</option>';
+  chs.forEach(ch => {
+    const opt = document.createElement('option');
+    opt.value = ch; opt.textContent = ch;
+    sel.appendChild(opt);
+  });
+  sel.value = current;
+}
+
+// ----- Tab Switching -----
+function switchTab(tabId) {
+  document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+
+  // refresh content when switching to certain tabs
+  if (tabId === 'module-list') { renderList(); populateChapterFilter(); }
+  if (tabId === 'module-review') { updateReview(); }
+  if (tabId === 'module-export') { tryAutoExport(); }
+}
+
+// ----- Toast -----
+let toastTimer = null;
+function showToast(msg, type='info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast toast-' + type + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ----- Modal -----
+function showModal(title, bodyHtml, actionsHtml) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  const act = document.getElementById('modalActions');
+  if (actionsHtml) act.innerHTML = actionsHtml;
+  else act.innerHTML = '<button class="btn btn-primary" onclick="closeModal()">确定</button>';
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+/* ==================================================================
+   MODULE 1: WORD INPUT
+   ================================================================== */
+function addSingleWord() {
+  const input = document.getElementById('singleWordInput');
+  const chapter = document.getElementById('chapterSelect').value;
+  const text = input.value.trim();
+  if (!text) { showToast('请输入单词或短语', 'error'); return; }
+
+  const word = text.toLowerCase().replace(/[^a-z0-9\s'-]/g,'').trim();
+  if (!word) { showToast('输入格式无效', 'error'); return; }
+
+  // check if already exists
+  const id = word.replace(/[^a-z0-9]/g,'');
+  if (words.find(w => w._id === id)) {
+    showToast('该单词已收录，无需重复录入', 'info');
+    input.value = '';
+    return;
+  }
+
+  // check auto-filter for basic words when batch, but for single we allow any from Eleven Rings
+  // For single entry, we trust the user
+  const newWord = {
+    _id: id,
+    word: word,
+    phonetic: {uk:'', us:''},
+    def: '（待补充释义）',
+    pos: '',
+    chapter: chapter,
+    difficulty: 'medium',
+    sentence: '',
+    addedAt: Date.now(),
+    status: 'unlearned'
+  };
+  words.push(newWord);
+  saveWords();
+  showToast(`已收录「${word}」`, 'success');
+  input.value = '';
+
+  // ask to fill details
+  showModal('新增词汇 - 补充详细信息', `
+    <p>已录入 <strong>${word}</strong>，建议补充以下信息以获得完整学习体验：</p>
+    <div class="form-group"><label>音标（英式）</label><input class="form-control" id="modalPhoneticUk" placeholder="/ˈeksɪz ənd ˈəʊz/"></div>
+    <div class="form-group"><label>释义</label><input class="form-control" id="modalDef" placeholder="书中语境释义"></div>
+    <div class="form-group"><label>词性</label><input class="form-control" id="modalPos" placeholder="n./v./adj./【固定搭配】"></div>
+    <div class="form-group"><label>原著例句</label><textarea class="form-control" id="modalSentence" placeholder="可选，书中原句或贴合语境的仿写例句"></textarea></div>
+    <div class="form-group"><label>记忆难度</label><select class="form-control" id="modalDifficulty"><option value="easy">简单</option><option value="medium" selected>中等</option><option value="hard">困难</option></select></div>
+  `, `
+    <button class="btn btn-outline" onclick="closeModal()">跳过</button>
+    <button class="btn btn-primary" onclick="saveModalDetails('${id}')">保存</button>
+  `);
+}
+
+function saveModalDetails(id) {
+  const w = words.find(x => x._id === id);
+  if (!w) return;
+  w.phonetic.uk = document.getElementById('modalPhoneticUk').value || w.phonetic.uk;
+  w.phonetic.us = w.phonetic.uk; // copy as default
+  w.def = document.getElementById('modalDef').value || w.def;
+  w.pos = document.getElementById('modalPos').value || w.pos;
+  w.sentence = document.getElementById('modalSentence').value || w.sentence;
+  w.difficulty = document.getElementById('modalDifficulty').value;
+  saveWords();
+  closeModal();
+  showToast('信息已保存', 'success');
+}
+
+function batchAddWords() {
+  const text = document.getElementById('batchTextInput').value.trim();
+  if (!text) { showToast('请粘贴英文原文或生词列表', 'error'); return; }
+  const chapter = document.getElementById('chapterSelect').value;
+
+  // Parse words from text - split by whitespace, newline, comma, punctuation
+  const tokens = text.split(/[\s,，、。.！!？?;；\n\r]+/).filter(t => t.trim().length > 0);
+  
+  const basicWords = ['a','an','the','do','does','did','done','doing','be','been','being','am','is','are','was','were','have','has','had','having','i','you','he','she','it','we','they','my','your','his','her','its','our','their','me','him','us','them','this','that','these','those','in','on','at','to','for','of','with','by','from','up','down','out','off','over','under','and','or','but','so','if','not','no','yes','can','will','may','shall','could','would','should','might','about','into','than','then','there','here','what','where','when','why','how','who','whom','which','all','each','every','some','any','many','much','more','most','few','little','one','two','three','very','just','also','too','only','well','even','still','way','thing','good','great','new','first','last','long','big','small','high','low','old','own','such','get','go','come','take','make','give','use','say','see','know','think','want','look','like','work','play','run','set','put','let','ask','tell','show','try','call','need','find','keep','start','stop'];
+
+
+  const filterBasic = settings.filterBasic !== 'no';
+  let added = [], skipped = [], rejected = [];
+
+  tokens.forEach(t => {
+    const clean = t.toLowerCase().replace(/[^a-z0-9'-]/g,'').trim();
+    // Remove possessive 's and trailing punctuation
+    const w = clean.replace(/'s$/,'').replace(/[^a-z0-9'-]/g,'').trim();
+    if (!w || w.length < 2) return;
+
+    // Filter basic words
+    if (filterBasic && basicWords.includes(w)) {
+      skipped.push(w);
+      return;
+    }
+
+    const id = w.replace(/[^a-z0-9]/g,'');
+    if (words.find(x => x._id === id)) {
+      skipped.push(w);
+      return;
+    }
+
+    // Look up from INITIAL_WORDS for auto-detailed info
+    const known = INITIAL_WORDS.find(iw => iw._id === id || iw.word.toLowerCase() === w);
+    if (known) {
+      words.push({...known, _id: id, addedAt: Date.now(), status: 'unlearned'});
+      added.push(w);
+    } else {
+      // Add as placeholder
+      words.push({
+        _id: id, word: w,
+        phonetic: {uk:'', us:''},
+        def: '（来自《Eleven Rings》原著，待补充释义）',
+        pos: '',
+        chapter: chapter,
+        difficulty: 'medium',
+        sentence: '',
+        addedAt: Date.now(),
+        status: 'unlearned'
+      });
+      added.push(w);
+    }
+  });
+
+  saveWords();
+  document.getElementById('batchTextInput').value = '';
+
+  let msg = `<p>成功入库 <strong>${added.length}</strong> 个生词。</p>`;
+  if (skipped.length > 0) msg += `<p style="color:var(--text-muted);font-size:0.85rem;">跳过 ${skipped.length} 个（基础词/重复词）</p>`;
+  if (added.length > 0) msg += `<div style="max-height:200px;overflow-y:auto;font-size:0.85rem;background:#f9f6f0;padding:8px;border-radius:4px;margin-top:8px;">${added.join('、')}</div>`;
+  showModal('批量录入结果', msg);
+}
+
+/* ==================================================================
+   MODULE 2: WORD LIST
+   ================================================================== */
+function renderList() {
+  const container = document.getElementById('listContent');
+  const search = document.getElementById('searchWord').value.toLowerCase().trim();
+  const filterCh = document.getElementById('filterChapter').value;
+  const filterSt = document.getElementById('filterStatus').value;
+  const sort = document.getElementById('sortBy').value;
+
+  let filtered = [...words];
+
+  if (search) {
+    filtered = filtered.filter(w =>
+      w.word.toLowerCase().includes(search) || w.def.toLowerCase().includes(search)
+    );
+  }
+  if (filterCh !== 'all') filtered = filtered.filter(w => w.chapter === filterCh);
+  if (filterSt !== 'all') filtered = filtered.filter(w => w.status === filterSt);
+
+  // Sort
+  if (sort === 'alpha') filtered.sort((a,b) => a.word.localeCompare(b.word));
+  else if (sort === 'alpha-desc') filtered.sort((a,b) => b.word.localeCompare(a.word));
+  else filtered.sort((a,b) => b.addedAt - a.addedAt);
+
+  // Paginate
+  const pageSize = settings.pageSize || 20;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const pagination = document.getElementById('listPagination');
+
+  // Get current page from data attr
+  if (!pagination.dataset.page) pagination.dataset.page = '1';
+  let page = parseInt(pagination.dataset.page);
+  if (page > totalPages) page = totalPages;
+  if (page < 1) page = 1;
+  pagination.dataset.page = page;
+
+  const start = (page - 1) * pageSize;
+  const pageItems = filtered.slice(start, start + pageSize);
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state"><p>没有匹配的生词。</p></div>';
+    pagination.innerHTML = '';
+    return;
+  }
+
+  // Build list
+  let html = '';
+  pageItems.forEach(w => {
+    const statusLabel = {unlearned:'未学习', learned:'已背诵', mastered:'已掌握', weak:'薄弱词'};
+    const diffLabel = {easy:'简单', medium:'中等', hard:'困难'};
+    const isPhrase = w.pos && w.pos.includes('固定搭配');
+
+    html += `<div class="word-item">
+      <div class="word-main">
+        <div class="word-text">${w.word}</div>
+        <div class="word-phonetic">${w.phonetic.uk || ''} ${w.phonetic.us ? '/ ' + w.phonetic.us : ''}</div>
+        <div class="word-def">${w.pos ? `<span style="color:var(--primary);font-size:0.8rem;">${w.pos}</span> ` : ''}${w.def}</div>
+        ${w.sentence ? `<div class="word-example">${w.sentence}</div>` : ''}
+        <div class="word-meta">
+          <span class="badge badge-${w.difficulty}">${diffLabel[w.difficulty]||'中等'}</span>
+          <span class="badge badge-${w.status}">${statusLabel[w.status]||'未学习'}</span>
+          <span style="font-size:0.7rem;color:var(--text-muted);">${w.chapter}</span>
+        </div>
+      </div>
+      <div class="word-actions">
+        <button class="btn btn-sm btn-outline" onclick="editWord('${w._id}')">编辑</button>
+        <button class="btn btn-sm ${w.status==='weak'?'btn-danger':'btn-outline'}" onclick="toggleStatus('${w._id}')">${w.status==='unlearned'?'标记已背':w.status==='learned'?'标记掌握':w.status==='mastered'?'→未学习':'移出薄弱'}</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteWord('${w._id}')">删除</button>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+
+  // Pagination buttons
+  let phtml = '';
+  phtml += `<button class="page-btn" onclick="goPage(${page-1})" ${page<=1?'disabled':''}>‹</button>`;
+  
+  // Show limited page numbers
+  let startP = Math.max(1, page - 2);
+  let endP = Math.min(totalPages, page + 2);
+  if (startP > 1) phtml += `<button class="page-btn" onclick="goPage(1)">1</button>${startP > 2 ? '<span style="padding:0 4px;color:var(--text-muted);">…</span>' : ''}`;
+  for (let i = startP; i <= endP; i++) {
+    phtml += `<button class="page-btn ${i===page?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  if (endP < totalPages) phtml += `${endP < totalPages - 1 ? '<span style="padding:0 4px;color:var(--text-muted);">…</span>' : ''}<button class="page-btn" onclick="goPage(${totalPages})">${totalPages}</button>`;
+  phtml += `<button class="page-btn" onclick="goPage(${page+1})" ${page>=totalPages?'disabled':''}>›</button>`;
+  phtml += `<span style="font-size:0.75rem;color:var(--text-muted);margin-left:8px;">共 ${filtered.length} 词</span>`;
+  pagination.innerHTML = phtml;
+}
+
+function goPage(p) {
+  const pagination = document.getElementById('listPagination');
+  const totalPages = pagination.querySelectorAll('.page-btn').length;
+  // recalc total
+  const search = document.getElementById('searchWord').value.toLowerCase().trim();
+  const filterCh = document.getElementById('filterChapter').value;
+  const filterSt = document.getElementById('filterStatus').value;
+  let filtered = [...words];
+  if (search) filtered = filtered.filter(w => w.word.toLowerCase().includes(search));
+  if (filterCh !== 'all') filtered = filtered.filter(w => w.chapter === filterCh);
+  if (filterSt !== 'all') filtered = filtered.filter(w => w.status === filterSt);
+  const total = Math.max(1, Math.ceil(filtered.length / (settings.pageSize || 20)));
+  if (p < 1) p = 1;
+  if (p > total) p = total;
+  pagination.dataset.page = p;
+  renderList();
+}
+
+function editWord(id) {
+  const w = words.find(x => x._id === id);
+  if (!w) return;
+  showModal('编辑生词', `
+    <div class="form-group"><label>英文</label><input class="form-control" id="editWord" value="${w.word}"></div>
+    <div class="form-group"><label>音标（英式）</label><input class="form-control" id="editPhoneticUk" value="${w.phonetic.uk || ''}"></div>
+    <div class="form-group"><label>音标（美式）</label><input class="form-control" id="editPhoneticUs" value="${w.phonetic.us || ''}"></div>
+    <div class="form-group"><label>释义</label><input class="form-control" id="editDef" value="${w.def}"></div>
+    <div class="form-group"><label>词性</label><input class="form-control" id="editPos" value="${w.pos || ''}"></div>
+    <div class="form-group"><label>例句</label><textarea class="form-control" id="editSentence">${w.sentence || ''}</textarea></div>
+    <div class="form-group"><label>难度</label><select class="form-control" id="editDifficulty">
+      <option value="easy" ${w.difficulty==='easy'?'selected':''}>简单</option>
+      <option value="medium" ${w.difficulty==='medium'?'selected':''}>中等</option>
+      <option value="hard" ${w.difficulty==='hard'?'selected':''}>困难</option>
+    </select></div>
+  `, `
+    <button class="btn btn-outline" onclick="closeModal()">取消</button>
+    <button class="btn btn-primary" onclick="saveEditWord('${id}')">保存</button>
+  `);
+}
+
+function saveEditWord(id) {
+  const w = words.find(x => x._id === id);
+  if (!w) return;
+  w.word = document.getElementById('editWord').value.trim() || w.word;
+  w.phonetic.uk = document.getElementById('editPhoneticUk').value;
+  w.phonetic.us = document.getElementById('editPhoneticUs').value;
+  w.def = document.getElementById('editDef').value || w.def;
+  w.pos = document.getElementById('editPos').value;
+  w.sentence = document.getElementById('editSentence').value;
+  w.difficulty = document.getElementById('editDifficulty').value;
+  // update _id if word changed
+  const newId = w.word.toLowerCase().replace(/[^a-z0-9]/g,'');
+  if (newId !== w._id && !words.find(x => x._id === newId)) {
+    w._id = newId;
+  }
+  saveWords();
+  closeModal();
+  showToast('已更新', 'success');
+}
+
+function toggleStatus(id) {
+  const w = words.find(x => x._id === id);
+  if (!w) return;
+  const next = {unlearned:'learned', learned:'mastered', mastered:'unlearned', weak:'learned'};
+  w.status = next[w.status] || 'unlearned';
+  saveWords();
+  renderList();
+}
+
+function deleteWord(id) {
+  const w = words.find(x => x._id === id);
+  if (!w) return;
+  showModal('确认删除', `<p>确定删除单词 <strong>${w.word}</strong>？此操作不可撤销。</p>`, `
+    <button class="btn btn-outline" onclick="closeModal()">取消</button>
+    <button class="btn btn-danger" onclick="confirmDelete('${id}')">确认删除</button>
+  `);
+}
+
+function confirmDelete(id) {
+  words = words.filter(w => w._id !== id);
+  saveWords();
+  closeModal();
+  showToast('已删除', 'success');
+}
+
+function clearAllWords() {
+  showModal('⚠️ 确认清空词库', '<p style="color:var(--danger);">此操作将删除全部 <strong>' + words.length + '</strong> 个生词，<strong>不可恢复</strong>！</p>', `
+    <button class="btn btn-outline" onclick="closeModal()">取消</button>
+    <button class="btn btn-danger" onclick="confirmClearAll()">确认清空全部</button>
+  `);
+}
+
+function confirmClearAll() {
+  words = [];
+  saveWords();
+  closeModal();
+  showToast('词库已清空', 'info');
+}
+
+function showStats() {
+  const total = words.length;
+  const unlearned = words.filter(w => w.status === 'unlearned').length;
+  const learned = words.filter(w => w.status === 'learned').length;
+  const mastered = words.filter(w => w.status === 'mastered').length;
+  const weak = words.filter(w => w.status === 'weak').length;
+  const chapters = [...new Set(words.map(w => w.chapter))].length;
+  showModal('📊 词库统计', `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;">
+      <div style="background:var(--bg);padding:12px;border-radius:8px;text-align:center;"><strong style="font-size:1.3rem;">${total}</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">总词数</span></div>
+      <div style="background:var(--bg);padding:12px;border-radius:8px;text-align:center;"><strong style="font-size:1.3rem;color:var(--primary);">${mastered}</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">已掌握</span></div>
+      <div style="background:var(--bg);padding:12px;border-radius:8px;text-align:center;"><strong style="font-size:1.3rem;color:var(--warn);">${learned}</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">已背诵</span></div>
+      <div style="background:var(--bg);padding:12px;border-radius:8px;text-align:center;"><strong style="font-size:1.3rem;color:var(--danger);">${weak}</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">薄弱词</span></div>
+    </div>
+    <p style="font-size:0.85rem;color:var(--text-muted);">覆盖 ${chapters} 个章节 | 未学习 ${unlearned} 词</p>
+  `);
+}
+
+/* ==================================================================
+   MODULE 3: REVIEW (Ebbinghaus)
+   ================================================================== */
+let reviewQueue = [];
+let reviewIndex = 0;
+let reviewTotal = 0;
+let reviewStack = []; // words to review this session
+
+function getEbbinghausDays() {
+  // Parse the weak freq setting
+  const freq = settings.weakFreq || '1,3,7';
+  return freq.split(',').map(Number);
+}
+
+function resetReview() {
+  const scope = document.getElementById('reviewScope').value;
+  let pool = [];
+  if (scope === 'weak') {
+    pool = words.filter(w => w.status === 'weak');
+  } else {
+    pool = [...words];
+  }
+
+  // Ebbinghaus: words scheduled for today
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const dueWords = pool.filter(w => {
+    if (w.status === 'mastered') return false;
+    if (!w.reviewDue) return true; // never reviewed
+    const due = new Date(w.reviewDue);
+    return due <= today;
+  });
+
+  // Also include weak words that haven't been reviewed
+  const weakDue = words.filter(w => w.status === 'weak' && !dueWords.find(d => d._id === w._id));
+  const allDue = [...dueWords, ...weakDue];
+
+  // Shuffle
+  for (let i = allDue.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allDue[i], allDue[j]] = [allDue[j], allDue[i]];
+  }
+
+  reviewStack = allDue;
+  reviewIndex = 0;
+  reviewTotal = allDue.length;
+
+  updateReview();
+}
+
+function updateReview() {
+  const count = document.getElementById('reviewCount');
+  const total = document.getElementById('reviewTotal');
+  const fill = document.getElementById('reviewProgressFill');
+  const content = document.getElementById('reviewContent');
+  const controls = document.getElementById('reviewControls');
+
+  count.textContent = reviewTotal;
+  total.textContent = words.length;
+
+  const progress = reviewTotal > 0 ? Math.round((reviewIndex / reviewTotal) * 100) : 0;
+  fill.style.width = progress + '%';
+
+  if (reviewIndex >= reviewTotal || reviewTotal === 0) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon" style="font-size:2.5rem;">✅</div>
+        <p style="font-size:1.1rem;font-weight:600;color:var(--primary-dark);">本轮复习完成！</p>
+        <p style="color:var(--text-muted);">已复习 ${reviewIndex} 个词汇。</p>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="resetReview()">继续复习</button>
+      </div>
+    `;
+    controls.style.display = 'none';
+    return;
+  }
+
+  controls.style.display = 'flex';
+  const w = reviewStack[reviewIndex];
+  if (!w) { controls.style.display = 'none'; return; }
+
+  const diffLabel = {easy:'简单', medium:'中等', hard:'困难'};
+  const isPhrase = w.pos && w.pos.includes('固定搭配');
+
+  content.innerHTML = `
+    <div class="flashcard-container">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flashcard-face">
+          <div class="fc-word">${w.word}</div>
+          <div class="fc-hint">👆 点击翻转查看详情</div>
+        </div>
+        <div class="flashcard-face flashcard-back">
+          <div class="fc-phonetic">${w.phonetic.uk || ''} ${w.phonetic.us ? '/ ' + w.phonetic.us : ''}</div>
+          <div class="fc-pos">${w.pos || ''}</div>
+          <div class="fc-def">💡 ${w.def}</div>
+          ${w.sentence ? `<div class="fc-example">"${w.sentence}"</div>` : ''}
+          <div style="margin-top:8px;">
+            <span class="badge badge-${w.difficulty}">${diffLabel[w.difficulty]||'中等'}</span>
+            <span style="font-size:0.75rem;color:var(--text-muted);margin-left:8px;">${reviewIndex + 1} / ${reviewTotal}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function flipCard() {
+  document.getElementById('flashcard').classList.toggle('flipped');
+}
+
+function markReview(action) {
+  if (reviewIndex >= reviewStack.length) return;
+  const w = reviewStack[reviewIndex];
+  if (!w) return;
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  if (action === 'forgotten') {
+    w.status = 'weak';
+    // Schedule next review: today + intervals
+    const days = getEbbinghausDays();
+    if (w.reviewCount === undefined) w.reviewCount = 0;
+    w.reviewCount++;
+    const idx = Math.min(w.reviewCount - 1, days.length - 1);
+    const nextReview = new Date(today);
+    nextReview.setDate(nextReview.getDate() + days[idx]);
+    w.reviewDue = nextReview.getTime();
+  } else {
+    // remembered
+    if (w.status === 'weak') {
+      // if it was weak and remembered, move to learned
+      w.status = 'learned';
+    } else if (w.status === 'unlearned') {
+      w.status = 'learned';
+    }
+    // Set next review in 1 day for learned
+    const next = new Date(today);
+    next.setDate(next.getDate() + 1);
+    w.reviewDue = next.getTime();
+    if (w.reviewCount === undefined) w.reviewCount = 0;
+    w.reviewCount++;
+  }
+
+  saveWords();
+  reviewIndex++;
+  updateReview();
+}
+
+/* ==================================================================
+   MODULE 4: QUIZ
+   ================================================================== */
+let quizQuestions = [];
+let quizIndex = 0;
+let quizCorrect = 0;
+let quizAnswered = false;
+
+function resetQuiz() {
+  quizQuestions = [];
+  quizIndex = 0;
+  quizCorrect = 0;
+  document.getElementById('quizContent').innerHTML = '';
+}
+
+function startQuiz() {
+  const mode = document.getElementById('quizMode').value;
+  const scope = document.getElementById('quizScope').value;
+  let count = parseInt(document.getElementById('quizCount').value);
+
+  let pool = [];
+  if (scope === 'weak') pool = words.filter(w => w.status === 'weak');
+  else pool = [...words];
+
+  if (pool.length < 2) {
+    showToast('词库词汇太少，无法出题', 'error');
+    return;
+  }
+
+  // Determine question count
+  if (count === 0 || count > pool.length) count = pool.length;
+  if (count < 2) count = 2;
+
+  // Randomly pick words
+  const shuffled = [...pool];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  const selected = shuffled.slice(0, count);
+
+  quizQuestions = [];
+  quizIndex = 0;
+  quizCorrect = 0;
+
+  selected.forEach((w, idx) => {
+    if (mode === 'en2cn') {
+      // Multiple choice
+      let options = [w.def];
+      // Add distractors
+      const others = words.filter(x => x._id !== w._id);
+      for (let o of others) {
+        if (options.length >= 4) break;
+        if (!options.includes(o.def)) options.push(o.def);
+      }
+      // Shuffle options
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      quizQuestions.push({type:'en2cn', w, options, correct: w.def, word: w.word});
+    } else if (mode === 'cn2en') {
+      // Fill in blank
+      quizQuestions.push({type:'cn2en', w, word: w.word, def: w.def, answer: w.word});
+    } else if (mode === 'phrase') {
+      // Phrase cloze - only for phrases or any word
+      // Show def, ask to type word
+      let hint = w.def;
+      let blanks = w.word.replace(/[a-zA-Z]/g, '_');
+      quizQuestions.push({type:'phrase', w, hint, word: w.word, blanks, answer: w.word});
+    }
+  });
+
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quizContent');
+  if (quizIndex >= quizQuestions.length) {
+    const total = quizQuestions.length;
+    const pct = total > 0 ? Math.round((quizCorrect / total) * 100) : 0;
+    const weakAdded = quizQuestions.filter(q => q.wrong).length;
+    container.innerHTML = `
+      <div class="quiz-result card">
+        <div class="score-num">${pct}%</div>
+        <div class="score-label">正确率</div>
+        <p style="margin-top:8px;font-size:0.9rem;">${quizCorrect} / ${total} 题正确</p>
+        ${weakAdded > 0 ? `<p style="color:var(--warn);font-size:0.85rem;">${weakAdded} 道错题已加入薄弱词库</p>` : ''}
+        <div class="btn-group" style="margin-top:16px;justify-content:center;">
+          <button class="btn btn-primary" onclick="startQuiz()">再测一次</button>
+          <button class="btn btn-outline" onclick="switchTab('module-review')">去复习薄弱词</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const q = quizQuestions[quizIndex];
+  quizAnswered = false;
+
+  if (q.type === 'en2cn') {
+    container.innerHTML = `
+      <div class="card">
+        <div class="quiz-question">
+          <div class="q-num">第 ${quizIndex + 1} / ${quizQuestions.length} 题</div>
+          <div class="q-text">请选择「${q.word}」的正确释义：</div>
+        </div>
+        <div class="quiz-options" id="quizOptions">
+          ${q.options.map((opt, i) => `<div class="quiz-option" data-idx="${i}" onclick="selectQuizOption(this, '${opt.replace(/'/g,"\\'")}')">${opt}</div>`).join('')}
+        </div>
+        <div id="quizFeedback" style="margin-top:12px;"></div>
+        <button class="btn btn-primary btn-block" id="quizNextBtn" style="display:none;" onclick="nextQuiz()">下一题 →</button>
+      </div>
+    `;
+  } else if (q.type === 'cn2en') {
+    container.innerHTML = `
+      <div class="card">
+        <div class="quiz-question">
+          <div class="q-num">第 ${quizIndex + 1} / ${quizQuestions.length} 题</div>
+          <div class="q-text">请拼写「${q.def}」对应的英文：</div>
+        </div>
+        <div class="quiz-input">
+          <input type="text" id="quizInputAnswer" placeholder="输入英文单词..." onkeydown="if(event.key==='Enter')submitFillIn()">
+        </div>
+        <div id="quizFeedback" style="margin-top:8px;"></div>
+        <div class="btn-group" style="margin-top:8px;">
+          <button class="btn btn-primary" onclick="submitFillIn()">提交</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('quizInputAnswer').focus();
+  } else if (q.type === 'phrase') {
+    container.innerHTML = `
+      <div class="card">
+        <div class="quiz-question">
+          <div class="q-num">第 ${quizIndex + 1} / ${quizQuestions.length} 题</div>
+          <div class="q-text">请补全短语：${q.def}</div>
+          <div style="font-family:monospace;font-size:1.2rem;letter-spacing:3px;margin-top:8px;">${q.blanks}</div>
+        </div>
+        <div class="quiz-input">
+          <input type="text" id="quizInputAnswer" placeholder="输入完整短语..." onkeydown="if(event.key==='Enter')submitFillIn()">
+        </div>
+        <div id="quizFeedback" style="margin-top:8px;"></div>
+        <div class="btn-group" style="margin-top:8px;">
+          <button class="btn btn-primary" onclick="submitFillIn()">提交</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('quizInputAnswer').focus();
+  }
+}
+
+function selectQuizOption(el, optText) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQuestions[quizIndex];
+  const options = document.querySelectorAll('.quiz-option');
+  options.forEach(o => o.classList.add('disabled'));
+
+  if (optText === q.correct) {
+    el.classList.add('correct');
+    quizCorrect++;
+    document.getElementById('quizFeedback').innerHTML = '<p style="color:var(--success);">✅ 正确！</p>';
+  } else {
+    el.classList.add('wrong');
+    q.wrong = true;
+    // Show correct answer
+    options.forEach(o => {
+      if (o.textContent === q.correct) o.classList.add('correct');
+    });
+    document.getElementById('quizFeedback').innerHTML = `<p style="color:var(--danger);">❌ 正确答案：${q.correct}</p>`;
+    // Mark as weak
+    markWordWeak(q.w._id);
+  }
+  document.getElementById('quizNextBtn').style.display = 'block';
+}
+
+function submitFillIn() {
+  if (quizAnswered) return;
+  const input = document.getElementById('quizInputAnswer');
+  const answer = input.value.trim().toLowerCase();
+  if (!answer) { showToast('请输入答案', 'error'); return; }
+
+  quizAnswered = true;
+  const q = quizQuestions[quizIndex];
+  const correct = q.answer.toLowerCase();
+  const feedback = document.getElementById('quizFeedback');
+
+  if (answer === correct || answer === correct.replace(/[^a-z0-9\s'-]/g,'')) {
+    quizCorrect++;
+    feedback.innerHTML = '<p style="color:var(--success);">✅ 正确！</p>';
+  } else {
+    q.wrong = true;
+    feedback.innerHTML = `<p style="color:var(--danger);">❌ 正确答案：<strong>${q.word}</strong></p>`;
+    markWordWeak(q.w._id);
+  }
+
+  // disable input
+  input.disabled = true;
+
+  // Add next button
+  const parent = feedback.parentElement;
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-primary btn-block';
+  btn.textContent = '下一题 →';
+  btn.onclick = nextQuiz;
+  btn.style.marginTop = '12px';
+  parent.appendChild(btn);
+}
+
+function nextQuiz() {
+  quizIndex++;
+  renderQuiz();
+}
+
+function markWordWeak(id) {
+  const w = words.find(x => x._id === id);
+  if (w && w.status !== 'mastered') {
+    w.status = 'weak';
+    // Schedule review
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const next = new Date(today);
+    next.setDate(next.getDate() + 1);
+    w.reviewDue = next.getTime();
+    saveWords();
+  }
+}
+
+/* ==================================================================
+   MODULE 5: EXPORT
+   ================================================================== */
+function tryAutoExport() {
+  // Only show preview if there's data
+  if (words.length === 0) {
+    document.getElementById('exportOutput').value = '词库为空，暂无数据可导出。';
+    return;
+  }
+}
+
+function exportTxt() {
+  if (words.length === 0) { showToast('词库为空', 'error'); return; }
+  let lines = [];
+  lines.push('═══════════════════════════════════════════');
+  lines.push('  Eleven Rings · 英文生词本');
+  lines.push('  来源：Phil Jackson《Eleven Rings》');
+  lines.push(`  总词数：${words.length}`);
+  lines.push('═══════════════════════════════════════════');
+  lines.push('');
+
+  const sorted = [...words].sort((a,b) => a.word.localeCompare(b.word));
+  sorted.forEach(w => {
+    const diffLabel = {easy:'简单', medium:'中等', hard:'困难'};
+    const statusLabel = {unlearned:'未学习', learned:'已背诵', mastered:'已掌握', weak:'薄弱词'};
+    lines.push(`【${w.word}】`);
+    if (w.phonetic.uk) lines.push(`  音标：${w.phonetic.uk}${w.phonetic.us ? ' / ' + w.phonetic.us : ''}`);
+    if (w.pos) lines.push(`  词性：${w.pos}`);
+    lines.push(`  释义：${w.def}`);
+    if (w.sentence) lines.push(`  例句：${w.sentence}`);
+    lines.push(`  难度：${diffLabel[w.difficulty] || '中等'}  |  状态：${statusLabel[w.status] || '未学习'}  |  章节：${w.chapter}`);
+    lines.push(`  ─────────────────────────`);
+    lines.push('');
+  });
+
+  const text = lines.join('\n');
+  document.getElementById('exportOutput').value = text;
+  downloadBlob(text, 'ElevenRings_生词本.txt', 'text/plain');
+  showToast('TXT 已生成', 'success');
+}
+
+function exportCsv() {
+  if (words.length === 0) { showToast('词库为空', 'error'); return; }
+  const statusLabel = {unlearned:'未学习', learned:'已背诵', mastered:'已掌握', weak:'薄弱词'};
+  const diffLabel = {easy:'简单', medium:'中等', hard:'困难'};
+  
+  let csv = '\uFEFF'; // BOM for Excel Chinese support
+  csv += '单词,音标(英式),音标(美式),释义,词性,例句,难度,学习状态,章节,收录时间\n';
+  
+  const sorted = [...words].sort((a,b) => a.word.localeCompare(b.word));
+  sorted.forEach(w => {
+    const row = [
+      w.word,
+      w.phonetic.uk || '',
+      w.phonetic.us || '',
+      w.def,
+      w.pos || '',
+      (w.sentence || '').replace(/"/g,'""'),
+      diffLabel[w.difficulty] || '中等',
+      statusLabel[w.status] || '未学习',
+      w.chapter,
+      new Date(w.addedAt).toLocaleDateString('zh-CN')
+    ].map(v => `"${v}"`).join(',');
+    csv += row + '\n';
+  });
+
+  document.getElementById('exportOutput').value = csv;
+  downloadBlob(csv, 'ElevenRings_生词本.csv', 'text/csv;charset=utf-8');
+  showToast('CSV 已生成', 'success');
+}
+
+function downloadBlob(content, filename, mimeType) {
+  const blob = new Blob([content], {type: mimeType});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function copyExport() {
+  const textarea = document.getElementById('exportOutput');
+  if (!textarea.value || textarea.value === '词库为空，暂无数据可导出。') {
+    showToast('没有内容可复制', 'error');
+    return;
+  }
+  navigator.clipboard.writeText(textarea.value).then(() => {
+    showToast('已复制到剪贴板', 'success');
+  }).catch(() => {
+    textarea.select();
+    document.execCommand('copy');
+    showToast('已复制', 'success');
+  });
+}
+
+// ----- Update all -----
+function updateAll() {
+  resetReview();
+  tryAutoExport();
+}
+
+// ===== START =====
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
