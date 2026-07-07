@@ -1396,8 +1396,12 @@ function startQuiz() {
     if (mode === 'en2cn') {
       // Multiple choice
       let options = [w.def];
-      // Add distractors
+      // Add distractors — shuffle to avoid repeating the same wrong options
       const others = words.filter(x => x._id !== w._id);
+      for (let i = others.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [others[i], others[j]] = [others[j], others[i]];
+      }
       for (let o of others) {
         if (options.length >= 4) break;
         if (!options.includes(o.def)) options.push(o.def);
